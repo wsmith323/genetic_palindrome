@@ -1,2 +1,2 @@
-# genetic_palindrome
+# Genetic Palindrome
 Genetic Palindrome coding challenge
