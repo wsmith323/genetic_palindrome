@@ -46,7 +46,11 @@ class GeneticSequence:
     def is_palindrome(self):
         """Is this sequence a genetic palindrome"""
         if self._is_palindrome is None:
-            self._is_palindrome = self._string == ''.join(reversed(self.complement))
+            if self._length % 2:
+                # Palindromes can't be odd lengths
+                self._is_palindrome = False
+            else:
+                self._is_palindrome = self._string == ''.join(reversed(self.complement))
         return self._is_palindrome
 
     @property
@@ -73,10 +77,12 @@ class GeneticSequence:
                             continue
 
                         sequence = GeneticSequence(self._string[index:end_index])
+
                         if sequence.length <= longest.length:
                             # No point in checking for palindrome if this
                             # sequence is shorter than the longest palindrome.
                             break
+
                         elif sequence.is_palindrome:
                             longest_index = index
                             longest = sequence
@@ -89,7 +95,7 @@ class GeneticSequence:
                 if longest.length == 0:
                     self._longest_palindrome = SimpleNamespace(index=None, sequence=None)
                 else:
-                    self._longest_palindrome = SimpleNamespace(index=longest_index,
-                                                               sequence=longest)
+                    self._longest_palindrome = SimpleNamespace(
+                        index=longest_index, sequence=longest)
 
         return self._longest_palindrome
