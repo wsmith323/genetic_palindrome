@@ -20,6 +20,9 @@ class GeneticSequence:
             raise self.InvalidSequenceError(f"ERROR: '{string}' is not a valid genetic sequence")
         self.string = string
         self.length = len(string)
+        self._complement = None
+        self._is_palindrome = None
+        self._longest_palindrome = None
 
     def __str__(self):
         return self.string
@@ -33,45 +36,60 @@ class GeneticSequence:
     @property
     def complement(self):
         """The genetic complement of this sequence."""
-        return ''.join(self.COMPLEMENT_MAP[n] for n in self.string)
+        if self._complement is None:
+            self._complement = ''.join(self.COMPLEMENT_MAP[n] for n in self.string)
+        return self._complement
 
     @property
     def is_palindrome(self):
         """Is this sequence a genetic palindrome"""
-        return self.string == ''.join(reversed(self.complement))
+        if self._is_palindrome is None:
+            self._is_palindrome = self.string == ''.join(reversed(self.complement))
+        return self._is_palindrome
 
     @property
-    def longest_palindrome_info(self):
+    def longest_palindrome(self):
         """
-        Information about the longest genetic palindrome contained
-        within this sequence.
+        Longest genetic palindrome contained within this sequence.
         """
-        if self.is_palindrome:
-            return SimpleNamespace(index=0, sequence=self)
+        if self._longest_palindrome is None:
+            if self.is_palindrome:
+                self._longest_palindrome = SimpleNamespace(index=0, sequence=self)
+            else:
+                longest_index = 0
+                longest = GeneticSequence('')
+                for index in range(self.length):
+                    segment_length = self.length - index
 
-        longest_index = 0
-        longest = GeneticSequence('')
-        for index in range(self.length):
-            # No need to search this sequence if a longer palindrome
-            # has already been found.
-            if (self.length - index - 1) <= longest.length:
-                continue
+                    # No need to search this sequence if a longer palindrome
+                    # has already been found.
+                    if segment_length <= longest.length:
+                        continue
 
-            # Check longest sequences first to decrease scope.
-            for end_index in range(self.length, index + 1, -1):
-                sequence = GeneticSequence(self.string[index:end_index])
-                # No point in checking for palindrome if this
-                # sequence is shorter than the longest palindrome.
-                if sequence.length <= longest.length:
-                    break
+                    # Check longest sequences first to decrease scope.
+                    for end_index in range(self.length, index + 1, -1):
+                        # Palindromes can't be odd lengths.
+                        if (end_index - index) % 2:
+                            continue
 
-                if sequence.is_palindrome:
-                    longest_index = index
-                    longest = sequence
-                    # Since we are checking the longest sequences
-                    # first, and we have already checked the length of
-                    # this sequence against the length of the longest
-                    # sequence, we can break out of the inner loop.
-                    break
+                        sequence = GeneticSequence(self.string[index:end_index])
+                        if sequence.length <= longest.length:
+                            # No point in checking for palindrome if this
+                            # sequence is shorter than the longest palindrome.
+                            break
+                        elif sequence.is_palindrome:
+                            longest_index = index
+                            longest = sequence
+                            # Since we are checking the longest sequences first,
+                            # and we have already checked the length of this palindrome
+                            # against the length of the longest palindrome, we can stop
+                            # checking any further sub-sequences.
+                            break
 
-        return SimpleNamespace(index=longest_index, sequence=longest)
+                if longest.length == 0:
+                    self._longest_palindrome = SimpleNamespace(index=None, sequence=None)
+                else:
+                    self._longest_palindrome = SimpleNamespace(index=longest_index,
+                                                               sequence=longest)
+
+        return self._longest_palindrome

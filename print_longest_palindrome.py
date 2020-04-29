@@ -47,11 +47,11 @@ def print_longest_palindrome(sequence_string):
     except GeneticSequence.InvalidSequenceError as e:
         print(f'\n{e}\n')
     else:
-        pal_info = sequence.longest_palindrome_info
-        if pal_info.sequence.length:
-            print(f'\nStarting Index: {pal_info.index}')
-            print(f'Length: {pal_info.sequence.length}')
-            print(f'Palindrome: "{pal_info.sequence}"\n')
+        pal = sequence.longest_palindrome
+        if pal.sequence:
+            print(f'\nStarting Index: {pal.index}')
+            print(f'Length: {pal.sequence.length}')
+            print(f'Palindrome: "{pal.sequence}"\n')
         else:
             print('\nNo palindrome found\n')
 
