@@ -8,8 +8,8 @@ class GeneticSequenceTest(unittest.TestCase):
         self.assertRaises(GeneticSequence.InvalidSequenceError, GeneticSequence, 'junk')
 
     def test_case_insensitive(self):
-        self.assertEqual(GeneticSequence('atcg').string, 'ATCG')
-        self.assertEqual(GeneticSequence('gCtA').string, 'GCTA')
+        self.assertEqual(GeneticSequence('atcg'), 'ATCG')
+        self.assertEqual(GeneticSequence('gCtA'), 'GCTA')
 
     def test_complement(self):
         self.assertEqual(GeneticSequence('ATCG').complement, 'TAGC')

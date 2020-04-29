@@ -18,14 +18,14 @@ class GeneticSequence:
         string = string.upper()
         if not (isinstance(string, str) and all(n in self.COMPLEMENT_MAP for n in string)):
             raise self.InvalidSequenceError(f"ERROR: '{string}' is not a valid genetic sequence")
-        self.string = string
-        self.length = len(string)
+        self._string = string
+        self._length = len(string)
         self._complement = None
         self._is_palindrome = None
         self._longest_palindrome = None
 
     def __str__(self):
-        return self.string
+        return self._string
 
     def __repr__(self):
         return f"{self.__class__.__name__}('{self}')"
@@ -33,18 +33,20 @@ class GeneticSequence:
     def __eq__(self, other):
         return str(self) == str(other)
 
+    length = property(lambda self: self._length)
+
     @property
     def complement(self):
         """The genetic complement of this sequence."""
         if self._complement is None:
-            self._complement = ''.join(self.COMPLEMENT_MAP[n] for n in self.string)
+            self._complement = ''.join(self.COMPLEMENT_MAP[n] for n in self._string)
         return self._complement
 
     @property
     def is_palindrome(self):
         """Is this sequence a genetic palindrome"""
         if self._is_palindrome is None:
-            self._is_palindrome = self.string == ''.join(reversed(self.complement))
+            self._is_palindrome = self._string == ''.join(reversed(self.complement))
         return self._is_palindrome
 
     @property
@@ -72,7 +74,7 @@ class GeneticSequence:
                         if (end_index - index) % 2:
                             continue
 
-                        sequence = GeneticSequence(self.string[index:end_index])
+                        sequence = GeneticSequence(self._string[index:end_index])
                         if sequence.length <= longest.length:
                             # No point in checking for palindrome if this
                             # sequence is shorter than the longest palindrome.
