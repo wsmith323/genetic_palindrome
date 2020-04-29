@@ -61,12 +61,10 @@ class GeneticSequence:
                 longest_index = 0
                 longest = GeneticSequence('')
                 for index in range(self.length):
-                    segment_length = self.length - index
-
                     # No need to search this sequence if a longer palindrome
                     # has already been found.
-                    if segment_length <= longest.length:
-                        continue
+                    if (self.length - index) <= longest.length:
+                        break
 
                     # Check longest sequences first to decrease scope.
                     for end_index in range(self.length, index + 1, -1):
